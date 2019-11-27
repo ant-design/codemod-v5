@@ -1,41 +1,68 @@
 {
-  "name": "antd-codemod",
-  "version": "0.0.1",
-  "description": "Codemod for ant design upgrade",
+  "name": "@ant-design/codemod-v4",
+  "version": "1.1.0",
+  "description": "Codemod for ant design v4 upgrade",
+  "bin": {
+    "antd4-codemod": "./bin/antd-codemod.js"
+  },
+  "files": [
+    "bin",
+    "transforms"
+  ],
   "keywords": [
     "ant design",
     "codemod",
     "antd"
   ],
-  "homepage": "https://github.com/ant-design/codemod",
+  "homepage": "https://github.com/ant-design/codemod-v4",
   "repository": {
     "type": "git",
-    "url": "git@github.com:ant-design/codemod.git"
+    "url": "git@github.com:ant-design/codemod-v4.git"
   },
   "bugs": {
-    "url": "http://github.com/ant-design/codemod/issues"
+    "url": "http://github.com/ant-design/codemod-v4/issues"
   },
   "license": "MIT",
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  },
   "scripts": {
-    "prepublishOnly": "npm run compile && np --yolo --no-publish && npm run gh-pages",
-    "lint": "eslint src/ --ext .ts,.tsx,.jsx,.js,.md",
+    "prepublishOnly": "np --yolo --no-publish",
+    "lint": "eslint transforms/ --ext .ts,.tsx,.jsx,.js,.md",
     "prettier": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
-    "pretty-quick": "pretty-quick"
+    "pretty-quick": "pretty-quick",
+    "test": "jest"
   },
   "dependencies": {
+    "@ant-design/icons": "^4.0.0-rc.0",
+    "chalk": "^3.0.0",
+    "execa": "^3.4.0",
+    "find-up": "^4.1.0",
+    "is-git-clean": "^1.1.0",
+    "jscodeshift": "^0.7.0",
+    "lodash": "^4.17.15",
+    "papaparse": "^5.1.0",
+    "read-pkg-up": "^7.0.1",
+    "semver": "^7.1.3",
+    "update-check": "^1.5.3",
+    "yargs-parser": "^16.1.0"
   },
   "devDependencies": {
-    "@umijs/fabric": "^1.1.10",
+    "@umijs/fabric": "^2.1.0",
     "coveralls": "^3.0.6",
     "cross-env": "^6.0.0",
     "enzyme": "^3.0.0",
-    "enzyme-adapter-react-16": "^1.0.1",
     "enzyme-to-json": "^3.4.0",
-    "eslint": "^6.6.0",
-    "husky": "^3.0.9",
+    "eslint": "^7.1.0",
+    "husky": "^4.3.0",
+    "jest": "^24.9.0",
     "np": "^5.1.0",
     "prettier": "^1.18.2",
-    "pretty-quick": "^2.0.1"
+    "pretty-quick": "^2.0.1",
+    "typescript": "^4.0.3"
   },
   "husky": {
     "hooks": {
