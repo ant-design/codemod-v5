@@ -17,10 +17,10 @@ Before run codemod scripts, you'd better make sure to commit your local git chan
 npm i -g @ant-design/codemod-v5
 # or for yarn user
 #  yarn global add @ant-design/codemod-v5
-antd4-codemod src
+antd5-codemod src
 
 # use npx
-npx -p @ant-design/codemod-v5 antd4-codemod src
+npx -p @ant-design/codemod-v5 antd5-codemod src
 ```
 
 ## Codemod scripts introduction
