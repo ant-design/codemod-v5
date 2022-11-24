@@ -7,7 +7,7 @@ const encoding = 'utf8';
 
 const summaryFilePath = path.join(
   require('os').tmpdir(),
-  './antd4-codemod-summary.csv',
+  './antd5-codemod-summary.csv',
 );
 
 const newline = '\r\n';

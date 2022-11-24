@@ -17,10 +17,10 @@
 npm i -g @ant-design/codemod-5
 # or for yarn user
 #  yarn global add @ant-design/codemod-5
-antd4-codemod src
+antd5-codemod src
 
 # 使用 npx
-npx -p @ant-design/codemod-5 antd4-codemod src
+npx -p @ant-design/codemod-5 antd5-codemod src
 ```
 
 ## Codemod 脚本包括:
