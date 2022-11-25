@@ -127,9 +127,7 @@ function getRunnerArgs(
 async function run(filePath, args = {}) {
   const extraScripts = args.extraScripts ? args.extraScripts.split(',') : [];
 
-  // eslint-disable-next-line no-restricted-syntax
   for (const transformer of transformers.concat(extraScripts)) {
-    // eslint-disable-next-line no-await-in-loop
     await transform(transformer, 'babylon', filePath, args);
   }
 
@@ -138,7 +136,8 @@ async function run(filePath, args = {}) {
 
 async function lessTransform(filePath, options) {
   const maxWorkers = getMaxWorkers(options);
-  return await transformLess(filePath, { maxWorkers });
+  const dir = path.isAbsolute(filePath) ? filePath : path.join(process.cwd(), filePath);
+  return await transformLess(dir, { maxWorkers });
 }
 
 async function transform(transformer, parser, filePath, options) {
