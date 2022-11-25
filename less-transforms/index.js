@@ -6,13 +6,13 @@ const globAsync = promisify(glob);
 
 const { transformFile } = require('./transform');
 
-module.exports = async (dir, options = { maxWorkers: 2 }) => {
-  const { ignore = ['**/node_modules/**', '**/dist/**'] } = options;
+module.exports = async (dir, options = {}) => {
+  const { ignore = ['**/node_modules/**', '**/dist/**'], maxWorkers = 2 } = options;
   const start = performance.now();
 
-  const files = await globAsync(`${dir}/**/*.less`, {
+  const files = await globAsync(`**/*.less`, {
     ignore,
-    // cwd:,
+    cwd: path.isAbsolute(dir) ? dir : path.join(process.cwd(), dir),
   });
 
   const { default: ora } = await import('ora');
@@ -44,7 +44,7 @@ module.exports = async (dir, options = { maxWorkers: 2 }) => {
 // 0 ok
 // Time elapsed: 0.384seconds
 
-  const result = await pAll(transformers, { concurrency: options.maxWorkers });
+  const result = await pAll(transformers, { concurrency: maxWorkers });
   console.log('All done.');
   console.log('Result:');
   const changedFileCount = result.filter(Boolean).length;
