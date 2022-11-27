@@ -59,7 +59,7 @@
   "devDependencies": {
     "@types/jest": "^29.2.3",
     "@types/jscodeshift": "^0.11.5",
-    "@umijs/fabric": "^2.1.0",
+    "@umijs/fabric": "^3.0.0",
     "coveralls": "^3.0.6",
     "cross-env": "^6.0.0",
     "enzyme": "^3.0.0",
