@@ -27,10 +27,7 @@ module.exports = (file, api, options) => {
 
     const regexList = antdPkgNames.map(antdPkg => {
       return new RegExp(
-        [
-          antdPkg,
-          `(${commentOutStyleImport.map(re => re.source).join('|')})`,
-        ].join('/'),
+        [antdPkg, `(${commentOutStyleImport.map(re => re.source).join('|')})`].join('/'),
       );
     });
 
@@ -48,7 +45,8 @@ module.exports = (file, api, options) => {
         j(path).replaceWith(path => {
           // 不加空行会导致无法执行 root.toSource()
           const empty = j.emptyStatement();
-          empty.comments = [j.commentLine(j(path.node).toSource())];
+          // add indent
+          empty.comments = [j.commentLine(' ' + j(path.node).toSource())];
           return empty;
         });
       });
@@ -61,7 +59,5 @@ module.exports = (file, api, options) => {
   let hasChanged = false;
   hasChanged = removeStyleImport(j, root) || hasChanged;
 
-  return hasChanged
-    ? root.toSource(options.printOptions || printOptions)
-    : null;
+  return hasChanged ? root.toSource(options.printOptions || printOptions) : null;
 };
