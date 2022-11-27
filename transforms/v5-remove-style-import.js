@@ -1,11 +1,7 @@
 const { printOptions } = require('./utils/config');
 const {
-  addSubmoduleImport,
-  addStyleModuleImport,
-  removeEmptyModuleImport,
   parseStrToArray,
 } = require('./utils');
-const { markDependency } = require('./utils/marker');
 
 // handle forked antd
 const commentOutStyleImport = [
@@ -29,7 +25,10 @@ module.exports = (file, api, options) => {
       return new RegExp(
         [antdPkg, `(${commentOutStyleImport.map(re => re.source).join('|')})`].join('/'),
       );
-    });
+    }).concat(
+      // import '@ant-design/compatible/assets/index.css';
+      new RegExp('@ant-design/compatible/assets/index\\.css'),
+    );
 
     // import { Comment, PageHeader } from 'antd';
     // import { Comment, PageHeader } from '@forked/antd';

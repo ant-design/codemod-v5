@@ -1,4 +1,4 @@
-const testAntdImportRegex = /(?:\(.+\)\s+)?(?:"|').+(~?antd\/.+\.less)(?:"|');?$/;
+const testAntdImportRegex = /(?:\(.+\)\s+)?(?:"|').*(~?antd\/.+\.less|~?@ant-design\/compatible\/assets\/index\.css)(?:"|');?$/;
 
 module.exports = (opts = {}) => {
   return {
