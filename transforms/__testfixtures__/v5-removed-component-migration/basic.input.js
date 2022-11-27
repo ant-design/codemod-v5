@@ -1,4 +1,4 @@
-import { Comment as AntdComment, Avatar, Tooltip, PageHeader, BackTop as Back } from 'antd';
+import { Comment, PageHeader, BackTop } from 'antd';
 import { DislikeFilled, DislikeOutlined, LikeFilled, LikeOutlined } from '@ant-design/icons';
 import React, { createElement, useState } from 'react';
 const App = () => {
@@ -32,7 +32,7 @@ const App = () => {
   ];
   return (
     <>
-      <AntdComment
+      <Comment
         actions={actions}
         author={<a>Han Solo</a>}
         avatar={<Avatar src="https://joeschmoe.io/api/v1/random" alt="Han Solo" />}
@@ -55,7 +55,7 @@ const App = () => {
         title="Title"
         subTitle="This is a subtitle"
       />
-      <Back />
+      <BackTop />
     </>
   );
 };

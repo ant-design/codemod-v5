@@ -7,9 +7,17 @@ const {
 } = require('./utils');
 const { markDependency } = require('./utils/marker');
 
-const removedComponentMap = {
-  Comment: '@ant-design/compatible',
-  PageHeader: '@ant-design/pro-layout',
+const removedComponentConfig = {
+  Comment: {
+    importSource: '@ant-design/compatible',
+  },
+  PageHeader: {
+    importSource: '@ant-design/pro-layout',
+  },
+  BackTop: {
+    importSource: 'antd',
+    rename: 'FloatButton.BackTop',
+  },
 };
 
 module.exports = (file, api, options) => {
@@ -24,11 +32,13 @@ module.exports = (file, api, options) => {
 
     // import { Comment, PageHeader } from 'antd';
     // import { Comment, PageHeader } from '@forked/antd';
+    const componentNameList = Object.keys(removedComponentConfig);
+
     root
       .find(j.Identifier)
       .filter(
         path =>
-          Object.keys(removedComponentMap).includes(path.node.name) &&
+          componentNameList.includes(path.node.name) &&
           path.parent.node.type === 'ImportSpecifier' &&
           antdPkgNames.includes(path.parent.parent.node.source.value),
       )
@@ -47,28 +57,43 @@ module.exports = (file, api, options) => {
 
         // add new import from '@ant-design/compatible'
         const localComponentName = path.parent.node.local.name;
-        const importFrom = removedComponentMap[importedComponentName];
-        if (importFrom === '@ant-design/compatible') {
-          addSubmoduleImport(j, root, {
-            moduleName: '@ant-design/compatible',
-            importedName: importedComponentName,
-            localName: localComponentName,
-            before: antdPkgName,
-          });
-
-          addStyleModuleImport(j, root, {
-            moduleName: '@ant-design/compatible/assets/index.css',
-            after: '@ant-design/compatible',
-          });
+        const importConfig = removedComponentConfig[importedComponentName];
+        if (importConfig.rename) {
+          if (importConfig.rename.includes('.')) {
+            // `FloatButton.BackTop`
+            const [
+              newComponentName,
+              compoundComponentName,
+            ] = importConfig.rename.split('.');
+            // import part
+            const importedLocalName = addSubmoduleImport(j, root, {
+              moduleName: importConfig.importSource,
+              importedName: newComponentName,
+              before: antdPkgName,
+            });
+            // rename part
+            root
+              .find(j.JSXElement, {
+                openingElement: {
+                  name: { name: localComponentName },
+                },
+              })
+              .forEach(path => {
+                path.node.openingElement.name = j.jsxMemberExpression(
+                  j.jsxIdentifier(importedLocalName),
+                  j.jsxIdentifier(compoundComponentName),
+                );
+              });
+          }
         } else {
           addSubmoduleImport(j, root, {
-            moduleName: importFrom,
+            moduleName: importConfig.importSource,
             importedName: importedComponentName,
             localName: localComponentName,
             before: antdPkgName,
           });
         }
-        markDependency(importFrom);
+        markDependency(importConfig);
       });
 
     return hasChanged;
