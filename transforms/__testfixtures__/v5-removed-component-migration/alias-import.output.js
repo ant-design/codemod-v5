@@ -1,7 +1,6 @@
 import { Comment as AntdComment } from '@ant-design/compatible';
-import '@ant-design/compatible/assets/index.css';
 import { PageHeader } from '@ant-design/pro-layout';
-import { Avatar, Tooltip } from 'antd';
+import { Avatar, FloatButton, Tooltip } from 'antd';
 import { DislikeFilled, DislikeOutlined, LikeFilled, LikeOutlined } from '@ant-design/icons';
 import React, { createElement, useState } from 'react';
 const App = () => {
@@ -33,33 +32,32 @@ const App = () => {
     </Tooltip>,
     <span key="comment-basic-reply-to">Reply to</span>,
   ];
-  return (
-    <>
-      <AntdComment
-        actions={actions}
-        author={<a>Han Solo</a>}
-        avatar={<Avatar src="https://joeschmoe.io/api/v1/random" alt="Han Solo" />}
-        content={
-          <p>
-            We supply a series of design principles, practical patterns and high quality design
-            resources (Sketch and Axure), to help people create their product prototypes beautifully
-            and efficiently.
-          </p>
-        }
-        datetime={
-          <Tooltip title="2016-11-22 11:22:33">
-            <span>8 hours ago</span>
-          </Tooltip>
-        }
-      />
-      <PageHeader
-        className="site-page-header"
-        onBack={() => null}
-        title="Title"
-        subTitle="This is a subtitle"
-      />
-    </>
-  );
+  return (<>
+    <AntdComment
+      actions={actions}
+      author={<a>Han Solo</a>}
+      avatar={<Avatar src="https://joeschmoe.io/api/v1/random" alt="Han Solo" />}
+      content={
+        <p>
+          We supply a series of design principles, practical patterns and high quality design
+          resources (Sketch and Axure), to help people create their product prototypes beautifully
+          and efficiently.
+        </p>
+      }
+      datetime={
+        <Tooltip title="2016-11-22 11:22:33">
+          <span>8 hours ago</span>
+        </Tooltip>
+      }
+    />
+    <PageHeader
+      className="site-page-header"
+      onBack={() => null}
+      title="Title"
+      subTitle="This is a subtitle"
+    />
+    <FloatButton.BackTop />
+  </>);
 };
 
 export default App;

@@ -54,18 +54,23 @@ function insertImportBefore(j, root, { importStatement, beforeModule }) {
 }
 
 function hasSubmoduleImport(j, root, moduleName, submoduleName) {
+  const collections = root
+    .find(j.ImportDeclaration, {
+      source: {
+        value: moduleName,
+      },
+    })
+    .find(j.ImportSpecifier, {
+      imported: {
+        name: submoduleName,
+      },
+    });
+
+  const targetImport = collections.paths();
+
+  // local 默认设置为 null
   return (
-    root
-      .find(j.ImportDeclaration, {
-        source: {
-          value: moduleName,
-        },
-      })
-      .find(j.ImportSpecifier, {
-        imported: {
-          name: submoduleName,
-        },
-      }).length > 0
+    targetImport[0]?.value?.local?.name || targetImport[0]?.value?.imported.name
   );
 }
 
@@ -177,8 +182,14 @@ function addSubmoduleImport(
   root,
   { moduleName, importedName, localName, before },
 ) {
-  if (hasSubmoduleImport(j, root, moduleName, importedName)) {
-    return;
+  const importedLocalName = hasSubmoduleImport(
+    j,
+    root,
+    moduleName,
+    importedName,
+  );
+  if (importedLocalName) {
+    return importedLocalName;
   }
 
   const importSpecifier = j.importSpecifier(
@@ -189,7 +200,7 @@ function addSubmoduleImport(
   if (
     addModuleImport(j, root, { pkgName: moduleName, importSpecifier, before })
   ) {
-    return;
+    return localName || importedName;
   }
 
   throw new Error(`No ${moduleName} import found!`);
