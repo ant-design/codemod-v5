@@ -2,11 +2,9 @@
 
 # Ant Design 5 Codemod
 
-一组帮助你升级到 antd 5 的 codemod 脚本集合，基于 [jscodeshift](https://github.com/facebook/jscodeshift) 构建。(受 [react-codemod](https://github.com/reactjs/react-codemod) 启发)
+一组帮助你升级到 antd 5 的 codemod 脚本集合，基于 [jscodeshift](https://github.com/facebook/jscodeshift) 和 and [postcss](https://github.com/postcss/postcss) 构建。(受 [react-codemod](https://github.com/reactjs/react-codemod) 启发)
 
-[![NPM version](https://img.shields.io/npm/v/@ant-design/codemod-5.svg?style=flat)](https://npmjs.org/package/@ant-design/codemod-5)
-[![NPM downloads](http://img.shields.io/npm/dm/@ant-design/codemod-5.svg?style=flat)](https://npmjs.org/package/@ant-design/codemod-5)
-[![Github Action](https://github.com/ant-design/codemod-v5/actions/workflows/test.yml/badge.svg)](https://github.com/ant-design/codemod-v5/actions/workflows/test.yml)
+[![NPM version](https://img.shields.io/npm/v/@ant-design/codemod-5.svg?style=flat)](https://npmjs.org/package/@ant-design/codemod-5) [![NPM downloads](http://img.shields.io/npm/dm/@ant-design/codemod-5.svg?style=flat)](https://npmjs.org/package/@ant-design/codemod-5) [![Github Action](https://github.com/ant-design/codemod-v5/actions/workflows/test.yml/badge.svg)](https://github.com/ant-design/codemod-v5/actions/workflows/test.yml)
 
 ## 使用
 
@@ -25,134 +23,103 @@ npx -p @ant-design/codemod-5 antd5-codemod src
 
 ## Codemod 脚本包括:
 
-#### `v3-Component-to-compatible`
+#### `v5-removed-component-migration`
 
-将已废弃的 `Form` 和 `Mention` 组件通过 `@ant-design/compatible` 包引入:
+Replace import for removed component in v5.
+
+- 将 `Comment` 改为从 `@ant-design/compatible` import.
+- 将 `PageHeader` 改为从 `@ant-design/pro-layout` import.
+- 从 `FloatButton.BackTop` 组件中导入并使用 `BackTop`.
 
 ```diff
-- import { Form, Input, Button, Mention } from 'antd';
-+ import { Form, Mention } from '@ant-design/compatible';
-+ import '@ant-design/compatible/assets/index.css';
-+ import { Input, Button } from 'antd';
+- import { Avatar, BackTop, Comment, PageHeader } from 'antd';
++ import { Comment } from '@ant-design/compatible';
++ import { PageHeader } from '@ant-design/pro-layout';
++ import { Avatar, FloatButton } from 'antd';
 
   ReactDOM.render( (
     <div>
-      <Form>
-        {getFieldDecorator('username')(<Input />)}
-        <Button>Submit</Button>
-      </Form>
-      <Mention
-        style={{ width: '100%' }}
-        onChange={onChange}
-        defaultValue={toContentState('@afc163')}
-        defaultSuggestions={['afc163', 'benjycui']}
-        onSelect={onSelect}
+      <PageHeader
+        className="site-page-header"
+        onBack={() => null}
+        title="Title"
+        subTitle="This is a subtitle"
       />
+      <Comment
+        actions={actions}
+        author={<a>Han Solo</a>}
+        avatar={<Avatar src="https://joeschmoe.io/api/v1/random" alt="Han Solo" />}
+        content={
+          <p>
+            We supply a series of design principles, practical patterns and high quality design
+            resources (Sketch and Axure), to help people create their product prototypes beautifully
+            and efficiently.
+          </p>
+        }
+        datetime={
+          <span title="2016-11-22 11:22:33">8 hours ago</span>
+        }
+      />
+-     <BackTop />
++     <FloatButton.BackTop />
     </div>
   );
 ```
 
-#### `v3-component-with-string-icon-props-to-5`
+#### `v5-props-changed-migration`
 
-将那些包含字符串 icon props 的组件转换成从 `@ant-design/icons` 中特定组件引入。
+将 v4 中部分 props 用法迁移到 v5 版本.
 
 ```diff
-  import { Avatar, Button, Result } from 'antd';
-+ import { QuestionOutlined, UserOutlined } from '@ant-design/icons';
+import { Tag, Modal, Slider } from 'antd';
 
-  ReactDOM.render(
-    <div>
--     <Button type="primary" shape="circle" icon="search" />
-+     <Button type="primary" shape="circle" icon={SearchOutlined} />
--     <Avatar shape="square" icon="user" />
-+     <Avatar shape="square" icon={UserOutlined} />
-      <Result
--       icon="question"
-+       icon={<QuestionOutlined />}
-        title="Great, we have done all the operations!"
-        extra={<Button type="primary">Next</Button>}
+const App = () => {
+  const [visible, setVisible] = useState(false);
+
+  return (
+    <>
+-     <Tag
+-       visible={visible}
+-     />
++     {visible ? <Tag /> : null}
+      <Modal
+-       visible={visible}
++       open={visible}
       />
-    </div>,
-    mountNode,
+-     <Slider tooltipVisible={visible} tooltipPlacement="bottomLeft" />
++     <Slider tooltip={{ placement: "bottomLeft", open: visible }} />
+    </>
   );
-
+};
 ```
 
-#### `v3-Icon-to-5-Icon`
+#### `v5-remove-style-import`
 
-将 v3 Icon 组件转换成 `@ant-design/icons` 中特定组件引入。
+注释掉 js 文件中的 antd 样式文件导入。
 
 ```diff
-- import { Icon, Input } from 'antd';
-+ import { Input } from 'antd';
-+ import Icon, { CodeFilled, SmileOutlined, SmileTwoTone } from '@ant-design/icons';
-
-  const HeartSvg = () => (
-    <svg width="1em" height="1em" fill="currentColor" viewBox="0 0 1024 1024">
-      <path d="M923 plapla..." />
-    </svg>
-  );
-
-  const HeartIcon = props => <Icon component={HeartSvg} {...props} />;
-
-  ReactDOM.render(
-    <div>
--     <Icon type="code" theme="filled" />
-+     <CodeFilled />
--     <Icon type="smile" theme="twoTone" twoToneColor="#eb2f96" />
-+     <SmileTwoTone twoToneColor="#eb2f96" />
--     <Icon type="code" theme={props.fill ? 'filled' : 'outlined'} />
-+     <LegacyIcon type="code" theme={props.fill ? 'filled' : 'outlined'} />
-      <HeartIcon />
-      <Icon viewBox="0 0 24 24">
-        <title>Cool Home</title>
-        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
-      </Icon>
-      <Input suffix={<SmileOutlined />} />
-    </div>,
-    mountNode,
-  );
-
+- import 'antd/es/auto-complete/style';
+- import 'antd/lib/button/style/index.less';
+- import 'antd/dist/antd.compact.min.css';
++ // import 'antd/es/auto-complete/style';
++ // import 'antd/lib/button/style/index.less';
++ // import 'antd/dist/antd.compact.min.css';
 ```
 
-#### `v3-LocaleProvider-to-5-ConfigProvider`
+#### `Remove Antd Less` in less file
 
-将 v3 LocaleProvider 组件转换成 5 ConfigProvider 组件。
-
-```diff
-- import { LocaleProvider } from 'antd';
-+ import { ConfigProvider } from 'antd';
-
-  ReactDOM.render(
--   <LocaleProvider {...yourConfig}>
-+   <ConfigProvider {...yourConfig}>
-      <Main />
--   </LocaleProvider>
-+   </ConfigProvider>
-    mountNode,
-  );
-```
-
-#### `v3-Modal-method-with-icon-to-5`
-
-将 `Modal.method()` 包含字符串 icon 属性的调用转换成从 `@ant-design/icons` 中特定组件引入。
+注释掉 less 文件中的 antd 样式文件导入。
 
 ```diff
-import { Modal } from 'antd';
-+ import { AntDesignOutlined } from '@ant-design/icons';
+- @import (reference) '~antd/dist/antd.less';
+- @import '~antd/es/button/style/index.less';
++ /* @import (reference) '~antd/dist/antd.less'; */
++ /* @import '~antd/es/button/style/index.less'; */
+@import './styles.less';
 
-  Modal.confirm({
--   icon: 'ant-design',
-+   icon: <AntDesignOutlined />,
-    title: 'Do you Want to delete these items?',
-    content: 'Some descriptions',
-    onOk() {
-      console.log('OK');
-    },
-    onCancel() {
-      console.log('Cancel');
-    },
-  });
+body {
+  font-size: 14px;
+}
 ```
 
 ## License
