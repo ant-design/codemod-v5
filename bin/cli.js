@@ -11,7 +11,7 @@ const isGitClean = require('is-git-clean');
 const updateCheck = require('update-check');
 const readPkgUp = require('read-pkg-up');
 const findUp = require('find-up');
-const semverSatisfies = require('semver/functions/satisfies');
+const semver = require('semver');
 
 const jscodeshiftBin = require.resolve('.bin/jscodeshift');
 
@@ -223,7 +223,7 @@ async function upgradeDetect(targetDir, needIcon, needCompatible) {
         // mark dependency installment state
         hasDependency = hasDependency || !!versionRange;
         // no dependency or improper version dependency
-        if (!!versionRange && !semverSatisfies(expectVersion, versionRange)) {
+        if (versionRange && !semver.satisfies(semver.minVersion(versionRange), expectVersion)) {
           result.push(['update', depName, expectVersion, property]);
         }
       });
@@ -247,7 +247,7 @@ async function upgradeDetect(targetDir, needIcon, needCompatible) {
          * make sure that they can `work well` with `antd5`
          * so we check dependency's version here
          */
-        if (!!versionRange && !semverSatisfies(expectVersion, versionRange)) {
+        if (versionRange && !semver.satisfies(semver.minVersion(versionRange), expectVersion)) {
           result.push(['update', depName, expectVersion, property]);
         }
       });
