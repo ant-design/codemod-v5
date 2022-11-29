@@ -5,10 +5,6 @@
   "bin": {
     "antd5-codemod": "./bin/antd-codemod.js"
   },
-  "files": [
-    "bin",
-    "transforms"
-  ],
   "keywords": [
     "ant design",
     "codemod",
@@ -31,7 +27,7 @@
     "access": "public"
   },
   "scripts": {
-    "prepublishOnly": "np --yolo --no-publish",
+    "release": "np --yolo --no-publish",
     "lint": "eslint transforms/ --ext .ts,.tsx,.jsx,.js,.md",
     "prettier": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "pretty-quick": "pretty-quick",
