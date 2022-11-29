@@ -27,7 +27,8 @@
     "node": ">=8.0.0"
   },
   "publishConfig": {
-    "registry": "https://registry.npmjs.org"
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
   },
   "scripts": {
     "prepublishOnly": "np --yolo --no-publish",
