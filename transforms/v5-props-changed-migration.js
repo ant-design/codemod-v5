@@ -4,6 +4,7 @@ const {
   createObjectProperty,
   createObjectExpression,
   getJSXAttributeValue,
+  findAllAssignedNames,
 } = require('./utils/ast');
 
 const changedComponentPropsMap = {
@@ -261,23 +262,6 @@ module.exports = (file, api, options) => {
     });
   }
 
-  function findAllAssignedNames(localAssignedName, localAssignedNames = []) {
-    const collection = root.find(j.VariableDeclarator, {
-      init: {
-        type: 'Identifier',
-        name: localAssignedName,
-      },
-    });
-
-    if (collection.length > 0) {
-      collection.forEach(nodePath => {
-        localAssignedNames.push(nodePath.node.id.name);
-        findAllAssignedNames(nodePath.node.id.name, localAssignedNames);
-      });
-    }
-    return localAssignedNames;
-  }
-
   // import deprecated components from '@ant-design/compatible'
   function importDeprecatedComponent(j, root) {
     let hasChanged = false;
@@ -352,6 +336,7 @@ module.exports = (file, api, options) => {
               localComponentNames.forEach(compoundComponentName => {
                 // 处理反复 reassign 的场景
                 const localAssignedNames = findAllAssignedNames(
+                  root, j,
                   compoundComponentName,
                   [compoundComponentName],
                 );
@@ -386,6 +371,7 @@ module.exports = (file, api, options) => {
 
               // 处理反复 reassign 的场景
               const localAssignedNames = findAllAssignedNames(
+                root, j,
                 localAssignedName,
                 [localAssignedName],
               );

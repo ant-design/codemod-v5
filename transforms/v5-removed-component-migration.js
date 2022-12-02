@@ -1,7 +1,6 @@
 const { printOptions } = require('./utils/config');
 const {
   addSubmoduleImport,
-  addStyleModuleImport,
   removeEmptyModuleImport,
   parseStrToArray,
 } = require('./utils');
