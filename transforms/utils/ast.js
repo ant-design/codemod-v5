@@ -20,3 +20,20 @@ exports.getJSXAttributeValue = function(j, nodePath) {
   }
   return value;
 };
+
+exports.findAllAssignedNames = function findAllAssignedNames(root, j, localAssignedName, localAssignedNames = []) {
+  const collection = root.find(j.VariableDeclarator, {
+    init: {
+      type: 'Identifier',
+      name: localAssignedName,
+    },
+  });
+
+  if (collection.length > 0) {
+    collection.forEach(nodePath => {
+      localAssignedNames.push(nodePath.node.id.name);
+      findAllAssignedNames(root, j, nodePath.node.id.name, localAssignedNames);
+    });
+  }
+  return localAssignedNames;
+}
