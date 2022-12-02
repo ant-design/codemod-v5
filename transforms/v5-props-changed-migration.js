@@ -134,6 +134,7 @@ module.exports = (file, api, options) => {
   );
 
   function handlePropsTransform(collection, componentConfig) {
+    let hasChanged = false;
     Object.keys(componentConfig).forEach(propName => {
       collection
         .find(j.JSXAttribute, {
@@ -178,16 +179,19 @@ module.exports = (file, api, options) => {
 
                 // 给对应 property 新增值
                 nodePath.parent.node.attributes.push(newPropKeyAttr);
+                hasChanged = true;
               } else {
                 existedPropKeyAttr
                   .paths()[0]
                   .value.value.expression.properties.push(
                     createObjectProperty(j, propSubKey, value),
                   );
+                hasChanged = true;
               }
             } else {
               // <Modal visible={1} /> -> <Modal open={1} />
               nodePath.node.name = replacer;
+              hasChanged = true;
             }
           }
 
@@ -204,6 +208,8 @@ module.exports = (file, api, options) => {
             nodePath.parent.node.attributes = nodePath.parent.node.attributes.filter(
               attr => attr.name.name !== propName,
             );
+
+            hasChanged = true;
 
             // <Tag visible />
             // 这种情况直接去掉 visible 即可
@@ -260,6 +266,8 @@ module.exports = (file, api, options) => {
           }
         });
     });
+
+    return hasChanged;
   }
 
   // import deprecated components from '@ant-design/compatible'
@@ -277,7 +285,6 @@ module.exports = (file, api, options) => {
           antdPkgNames.includes(path.parent.parent.node.source.value),
       )
       .forEach(path => {
-        hasChanged = true;
         // import { Tag } from 'antd'
         // import { Tag as Tag1 } from 'antd'
         const importedComponentName = path.parent.node.imported.name;
@@ -288,7 +295,7 @@ module.exports = (file, api, options) => {
         const nonCompoundComponent = root.findJSXElements(localComponentName);
         // 处理非 compound component 部分
         if (nonCompoundComponent.length) {
-          handlePropsTransform(nonCompoundComponent, componentConfig);
+          hasChanged = handlePropsTransform(nonCompoundComponent, componentConfig);
         }
 
         // 处理 compound component 部分
@@ -315,7 +322,7 @@ module.exports = (file, api, options) => {
             },
           });
           if (compoundComponent.length) {
-            handlePropsTransform(compoundComponent, componentConfig);
+            hasChanged = handlePropsTransform(compoundComponent, componentConfig);
           }
 
           // const { RangePicker } = DatePicker;
@@ -344,7 +351,7 @@ module.exports = (file, api, options) => {
                 localAssignedNames.forEach(componentName => {
                   const compoundComponent = root.findJSXElements(componentName);
                   if (compoundComponent) {
-                    handlePropsTransform(compoundComponent, componentConfig);
+                    hasChanged = handlePropsTransform(compoundComponent, componentConfig);
                   }
                 });
               });
@@ -379,7 +386,7 @@ module.exports = (file, api, options) => {
               localAssignedNames.forEach(componentName => {
                 const compoundComponent = root.findJSXElements(componentName);
                 if (compoundComponent) {
-                  handlePropsTransform(compoundComponent, componentConfig);
+                  hasChanged = handlePropsTransform(compoundComponent, componentConfig);
                 }
               });
             });
