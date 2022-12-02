@@ -6,14 +6,12 @@ const os = require('os');
 
 const _ = require('lodash');
 const chalk = require('chalk');
-const execa = require('execa');
 const isGitClean = require('is-git-clean');
 const updateCheck = require('update-check');
 const readPkgUp = require('read-pkg-up');
 const findUp = require('find-up');
 const semver = require('semver');
-
-const jscodeshiftBin = require.resolve('.bin/jscodeshift');
+const { run: jscodeshift } = require('jscodeshift/src/Runner');
 
 const summary = require('../transforms/utils/summary');
 const marker = require('../transforms/utils/marker');
@@ -24,10 +22,6 @@ const transformLess = require('../less-transforms');
 
 // jscodeshift codemod scripts dir
 const transformersDir = path.join(__dirname, '../transforms');
-
-// override default babylon parser config to enable `decorator-legacy`
-// https://github.com/facebook/jscodeshift/blob/master/parser/babylon.js
-const babylonConfig = path.join(__dirname, './babylon.config.json');
 
 // jscodeshift bin#--ignore-config
 const ignoreConfig = path.join(__dirname, './codemod.ignore');
@@ -93,41 +87,29 @@ function getRunnerArgs(
   parser = 'babylon', // use babylon as default parser
   options = {},
 ) {
-  const args = ['--verbose=2', '--ignore-pattern=**/node_modules'];
+  const args = {
+    verbose: 2,
+    // limit usage for cpus
+    cpus: getMaxWorkers(options),
+    // https://github.com/facebook/jscodeshift/blob/master/src/Runner.js#L255
+    // https://github.com/facebook/jscodeshift/blob/master/src/Worker.js#L50
+    babel: false,
+    parser,
+    // override default babylon parser config to enable `decorator-legacy`
+    // https://github.com/facebook/jscodeshift/blob/master/parser/babylon.js
+    parserConfig: require('./babylon.config.json'),
+    extensions: ['tsx', 'ts', 'jsx', 'js'].join(','),
+    transform: transformerPath,
+    ignorePattern: '**/node_modules',
+    ignoreConfig,
+    args: ['antd', '@alipay/bigfish/antd'],
+  };
 
-  // limit usage for cpus
-  const cpus = getMaxWorkers(options);
-  args.push('--cpus', cpus);
-
-  // https://github.com/facebook/jscodeshift/blob/master/src/Runner.js#L255
-  // https://github.com/facebook/jscodeshift/blob/master/src/Worker.js#L50
-  args.push('--no-babel');
-
-  args.push('--parser', parser);
-
-  args.push('--parser-config', babylonConfig);
-  args.push('--extensions=tsx,ts,jsx,js');
-
-  args.push('--transform', transformerPath);
-
-  args.push('--ignore-config', ignoreConfig);
-
-  if (options.gitignore) {
-    args.push('--ignore-config', options.gitignore);
-  }
-
-  if (options.style) {
-    args.push('--importStyles');
-  }
-
-  args.push('--antdPkgNames=antd,@alipay/bigfish/antd');
   return args;
 }
 
 async function run(filePath, args = {}) {
-  const extraScripts = args.extraScripts ? args.extraScripts.split(',') : [];
-
-  for (const transformer of transformers.concat(extraScripts)) {
+  for (const transformer of transformers) {
     await transform(transformer, 'babylon', filePath, args);
   }
 
@@ -137,6 +119,8 @@ async function run(filePath, args = {}) {
 async function lessTransform(filePath, options) {
   const maxWorkers = getMaxWorkers(options);
   const dir = path.isAbsolute(filePath) ? filePath : path.join(process.cwd(), filePath);
+  // less part
+  // `@antd/xxxx` | `~@antd/xxxx`
   return await transformLess(dir, { maxWorkers });
 }
 
@@ -147,24 +131,20 @@ async function transform(transformer, parser, filePath, options) {
   // pass closet .gitignore to jscodeshift as extra `--ignore-file` option
   // const gitignorePath = await findGitIgnore(filePath);
 
-  const args = [filePath].concat(
-    getRunnerArgs(transformerPath, parser, {
-      ...options,
-      // gitignore: gitignorePath,
-    }),
-  );
+  const args = getRunnerArgs(transformerPath, parser, {
+    ...options,
+    // gitignore: gitignorePath,
+  });
 
   try {
-    if (process.env.NODE_ENV === 'local') {
-      console.log(`Running jscodeshift with: ${args.join(' ')}`);
-    }
+    // if (process.env.NODE_ENV === 'local') {
+      console.log(`Running jscodeshift with: ${JSON.stringify(args)}`);
+    // }
+
+    const cwd = path.isAbsolute(filePath) ? filePath : path.join(process.cwd(), filePath);
+
     // js part
-    await execa(jscodeshiftBin, args, {
-      stdio: 'inherit',
-      stripEof: false,
-    });
-    // less part
-    // `@antd/xxxx` | `~@antd/xxxx`
+    await jscodeshift(transformerPath, [ cwd ], args);
   } catch (err) {
     console.error(err);
     if (process.env.NODE_ENV === 'local') {
