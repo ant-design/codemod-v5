@@ -1,5 +1,5 @@
-const { promisify } = require('util');
 const path = require('path');
+const { promisify } = require('util');
 const glob = require('glob');
 
 const globAsync = promisify(glob);
