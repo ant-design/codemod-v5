@@ -93,6 +93,27 @@ const App = () => {
 };
 ```
 
+#### `v5-message-removed-method-migration`
+
+Replace `message.warn` with `message.warning`.
+
+```diff
+import { message } from 'antd';
+
+const App = () => {
+  const [messageApi, contextHolder] = message.useMessage();
+  const onClick1 = () => {
+-   message.warning();
++   message.warning();
+  }
+  const onClick2 = () => {
+-   messageApi.warning();
++   messageApi.warning();
+  };
+  return <>{contextHolder}</>;
+};
+```
+
 #### `v5-remove-style-import`
 
 Comment out the style file import from antd (in js file).

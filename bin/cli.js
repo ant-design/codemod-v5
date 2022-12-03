@@ -137,14 +137,12 @@ async function transform(transformer, parser, filePath, options) {
   });
 
   try {
-    // if (process.env.NODE_ENV === 'local') {
+    if (process.env.NODE_ENV === 'local') {
       console.log(`Running jscodeshift with: ${JSON.stringify(args)}`);
-    // }
-
-    const cwd = path.isAbsolute(filePath) ? filePath : path.join(process.cwd(), filePath);
+    }
 
     // js part
-    await jscodeshift(transformerPath, [ cwd ], args);
+    await jscodeshift(transformerPath, [ filePath ], args);
   } catch (err) {
     console.error(err);
     if (process.env.NODE_ENV === 'local') {

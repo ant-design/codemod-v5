@@ -93,6 +93,27 @@ const App = () => {
 };
 ```
 
+#### `v5-message-removed-method-migration`
+
+替换 `message.warn` 为 `message.warning`。
+
+```diff
+import { message } from 'antd';
+
+const App = () => {
+  const [messageApi, contextHolder] = message.useMessage();
+  const onClick1 = () => {
+-   message.warning();
++   message.warning();
+  }
+  const onClick2 = () => {
+-   messageApi.warning();
++   messageApi.warning();
+  };
+  return <>{contextHolder}</>;
+};
+```
+
 #### `v5-remove-style-import`
 
 注释掉 js 文件中的 antd 样式文件导入。
