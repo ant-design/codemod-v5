@@ -75,8 +75,7 @@
   },
   "lint-staged": {
     "src/**/*.{ts,tsx,js,jsx,json,md}": [
-      "prettier --write",
-      "git add"
+      "prettier --write"
     ]
   },
   "cnpm": {

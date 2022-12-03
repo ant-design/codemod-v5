@@ -155,6 +155,8 @@ module.exports = (file, api, options) => {
                 attr => attr.name.name !== propName,
               );
 
+              hasChanged = true;
+
               const [propKey, propSubKey] = replacer.split('.');
               // 检测是否已存在对应的 property 没有则创建一个新的
               // 获取 `Tag` 的 props
@@ -179,14 +181,12 @@ module.exports = (file, api, options) => {
 
                 // 给对应 property 新增值
                 nodePath.parent.node.attributes.push(newPropKeyAttr);
-                hasChanged = true;
               } else {
                 existedPropKeyAttr
                   .paths()[0]
                   .value.value.expression.properties.push(
                     createObjectProperty(j, propSubKey, value),
                   );
-                hasChanged = true;
               }
             } else {
               // <Modal visible={1} /> -> <Modal open={1} />
@@ -271,7 +271,7 @@ module.exports = (file, api, options) => {
   }
 
   // import deprecated components from '@ant-design/compatible'
-  function importDeprecatedComponent(j, root) {
+  function handlePropsChanged(j, root) {
     let hasChanged = false;
 
     // import { Tag, Mention } from 'antd';
@@ -294,8 +294,8 @@ module.exports = (file, api, options) => {
 
         const nonCompoundComponent = root.findJSXElements(localComponentName);
         // 处理非 compound component 部分
-        if (nonCompoundComponent.length) {
-          hasChanged = handlePropsTransform(nonCompoundComponent, componentConfig);
+        if (handlePropsTransform(nonCompoundComponent, componentConfig)) {
+          hasChanged = true;
         }
 
         // 处理 compound component 部分
@@ -321,8 +321,8 @@ module.exports = (file, api, options) => {
               },
             },
           });
-          if (compoundComponent.length) {
-            hasChanged = handlePropsTransform(compoundComponent, componentConfig);
+          if (handlePropsTransform(compoundComponent, componentConfig)) {
+            hasChanged = true;
           }
 
           // const { RangePicker } = DatePicker;
@@ -350,8 +350,8 @@ module.exports = (file, api, options) => {
 
                 localAssignedNames.forEach(componentName => {
                   const compoundComponent = root.findJSXElements(componentName);
-                  if (compoundComponent) {
-                    hasChanged = handlePropsTransform(compoundComponent, componentConfig);
+                  if (handlePropsTransform(compoundComponent, componentConfig)) {
+                    hasChanged = true;
                   }
                 });
               });
@@ -385,8 +385,8 @@ module.exports = (file, api, options) => {
 
               localAssignedNames.forEach(componentName => {
                 const compoundComponent = root.findJSXElements(componentName);
-                if (compoundComponent) {
-                  hasChanged = handlePropsTransform(compoundComponent, componentConfig);
+                if (handlePropsTransform(compoundComponent, componentConfig)) {
+                  hasChanged = true;
                 }
               });
             });
@@ -399,7 +399,7 @@ module.exports = (file, api, options) => {
   // step1. import deprecated components from '@ant-design/compatible'
   // step2. cleanup antd import if empty
   let hasChanged = false;
-  hasChanged = importDeprecatedComponent(j, root) || hasChanged;
+  hasChanged = handlePropsChanged(j, root) || hasChanged;
 
   return hasChanged
     ? root.toSource(options.printOptions || printOptions)
