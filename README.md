@@ -93,12 +93,13 @@ const App = () => {
 };
 ```
 
-#### `v5-message-removed-method-migration`
+#### `v5-removed-static-method-migration`
 
-Replace `message.warn` with `message.warning`.
+* Replace `message.warn` with `message.warning`.
+* Replace `notification.close` with `notification.destroy`.
 
 ```diff
-import { message } from 'antd';
+import { message, notification } from 'antd';
 
 const App = () => {
   const [messageApi, contextHolder] = message.useMessage();
@@ -110,6 +111,17 @@ const App = () => {
 -   messageApi.warning();
 +   messageApi.warning();
   };
+
+  const [notificationApi] = notification.useNotification();
+  const onClick3 = () => {
+-   notification.close();
++   notification.destroy();
+  }
+  const onClick4 = () => {
+-   notificationApi.close();
++   notificationApi.destroy();
+  };
+
   return <>{contextHolder}</>;
 };
 ```
