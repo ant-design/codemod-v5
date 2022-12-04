@@ -1,19 +1,17 @@
-const {
-  parseStrToArray,
-} = require('./utils');
+const { parseStrToArray } = require('./utils');
 const { printOptions } = require('./utils/config');
 const { findAllAssignedNames } = require('./utils/ast');
 
 const changedApiMap = {
   message: {
     hook: 'useMessage',
-    rename: {
+    replace: {
       'warn': 'warning',
     },
   },
   notification: {
     hook: 'useNotification',
-    rename: {
+    replace: {
       'close': 'destroy',
     },
   },
@@ -24,10 +22,10 @@ module.exports = (file, api, options) => {
   const root = j(file.source);
   const antdPkgNames = parseStrToArray(options.antdPkgNames || 'antd');
 
-  function replaceCall(msgApiName, importedName) {
-    const changedApiConfig = changedApiMap[importedName]?.rename;
+  function replaceDeconstructionAssignCall(msgApiName, importedName) {
+    const changedApiConfig = changedApiMap[importedName]?.replace;
     if (changedApiConfig) {
-      Object.values(changedApiConfig).forEach(([oldName, newName]) => {
+      Object.entries(changedApiConfig).forEach(([oldName, newName]) => {
         // msgApi.warn => msgApi.warning
         root.find(j.CallExpression, {
           callee: {
@@ -49,9 +47,9 @@ module.exports = (file, api, options) => {
   }
 
   function replaceCallWithIndexZero(aliasedApiName, importedName) {
-    const changedApiConfig = changedApiMap[importedName]?.rename;
+    const changedApiConfig = changedApiMap[importedName]?.replace;
     if (changedApiConfig) {
-      Object.values(changedApiConfig).forEach(([_, newName]) => {
+      Object.entries(changedApiConfig).forEach(([_, newName]) => {
         // msgNamespace[0].warn => msgNamespace[0].warning
         root.find(j.CallExpression, {
           callee: {
@@ -87,7 +85,7 @@ module.exports = (file, api, options) => {
       );
 
       localAssignedNames.forEach(apiName => {
-        replaceCall(apiName);
+        replaceDeconstructionAssignCall(apiName, importedName);
         hasChanged = true;
       });
     } else if (path.node.id.type === 'Identifier') {
@@ -132,7 +130,7 @@ module.exports = (file, api, options) => {
         const importedName = path.parent.node.imported.name;
         const localComponentName = path.parent.node.local.name;
         // message.warn -> message.warning
-        replaceCall(localComponentName, importedName);
+        replaceDeconstructionAssignCall(localComponentName, importedName);
         hasChanged = true;
         
         // useMessage called()
