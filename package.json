@@ -34,7 +34,6 @@
     "test": "jest"
   },
   "dependencies": {
-    "@ant-design/icons": "^4.0.0-rc.0",
     "chalk": "^3.0.0",
     "find-up": "^4.1.0",
     "glob": "^8.0.3",
