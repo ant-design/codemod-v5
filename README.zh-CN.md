@@ -4,7 +4,7 @@
 
 一组帮助你升级到 antd 5 的 codemod 脚本集合，基于 [jscodeshift](https://github.com/facebook/jscodeshift) 和 and [postcss](https://github.com/postcss/postcss) 构建。(受 [react-codemod](https://github.com/reactjs/react-codemod) 启发)
 
-[![NPM version](https://img.shields.io/npm/v/@ant-design/codemod-5.svg?style=flat)](https://npmjs.org/package/@ant-design/codemod-5) [![NPM downloads](http://img.shields.io/npm/dm/@ant-design/codemod-5.svg?style=flat)](https://npmjs.org/package/@ant-design/codemod-5) [![Github Action](https://github.com/ant-design/codemod-v5/actions/workflows/test.yml/badge.svg)](https://github.com/ant-design/codemod-v5/actions/workflows/test.yml)
+[![NPM version](https://img.shields.io/npm/v/@ant-design/codemod-v5.svg?style=flat)](https://npmjs.org/package/@ant-design/codemod-v5) [![NPM downloads](http://img.shields.io/npm/dm/@ant-design/codemod-v5.svg?style=flat)](https://npmjs.org/package/@ant-design/codemod-v5) [![Github Action](https://github.com/ant-design/codemod-v5/actions/workflows/test.yml/badge.svg)](https://github.com/ant-design/codemod-v5/actions/workflows/test.yml)
 
 ## 使用
 
