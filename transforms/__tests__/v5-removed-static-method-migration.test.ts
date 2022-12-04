@@ -1,7 +1,7 @@
 import { defineTest } from 'jscodeshift/src/testUtils';
 
-const testUnit = 'v5-message-removed-method-migration';
-const tests = ['basic'];
+const testUnit = 'v5-removed-static-method-migration';
+const tests = ['message', 'notification'];
 
 describe(testUnit, () => {
   tests.forEach(test =>
