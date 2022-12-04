@@ -11,14 +11,11 @@ A collection of codemod scripts that help upgrade antd v5 using [jscodeshift](ht
 Before run codemod scripts, you'd better make sure to commit your local git changes firstly.
 
 ```shell
-# global installation
-npm i -g @ant-design/codemod-v5
-# or for yarn user
-#  yarn global add @ant-design/codemod-v5
-antd5-codemod src
-
-# use npx
+# Run directly through npx
 npx -p @ant-design/codemod-v5 antd5-codemod src
+
+# Or run directly through pnpm
+pnpm --package=@ant-design/codemod-v5 dlx antd5-codemod src
 ```
 
 ## Codemod scripts introduction

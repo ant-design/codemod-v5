@@ -11,14 +11,10 @@
 在运行 codemod 脚本前，请先提交你的本地代码修改。
 
 ```shell
-# 全局安装
-npm i -g @ant-design/codemod-5
-# or for yarn user
-#  yarn global add @ant-design/codemod-5
-antd5-codemod src
-
-# 使用 npx
-npx -p @ant-design/codemod-5 antd5-codemod src
+# 使用 npx 直接运行
+npx -p @ant-design/codemod-v5 antd5-codemod src
+# 或者使用 pnpm 直接运行
+pnpm --package=@ant-design/codemod-v5 dlx antd5-codemod src
 ```
 
 ## Codemod 脚本包括:
