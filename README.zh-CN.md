@@ -104,11 +104,11 @@ import { message, notification } from 'antd';
 const App = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const onClick1 = () => {
--   message.warning();
+-   message.warn();
 +   message.warning();
   }
   const onClick2 = () => {
--   messageApi.warning();
+-   messageApi.warn();
 +   messageApi.warning();
   };
 
