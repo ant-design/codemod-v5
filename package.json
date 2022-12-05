@@ -42,7 +42,6 @@
     "lodash": "^4.17.15",
     "ora": "^6.1.2",
     "p-all": "^4.0.0",
-    "papaparse": "^5.1.0",
     "postcss": "^8.4.19",
     "postcss-less": "^6.0.0",
     "read-pkg-up": "^7.0.1",

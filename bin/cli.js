@@ -13,11 +13,9 @@ const findUp = require('find-up');
 const semver = require('semver');
 const { run: jscodeshift } = require('jscodeshift/src/Runner');
 
-const summary = require('../transforms/utils/summary');
-const marker = require('../transforms/utils/marker');
 const pkg = require('../package.json');
 const pkgUpgradeList = require('./upgrade-list');
-
+const { getDependencies } = require('../transforms/utils/marker');
 const transformLess = require('../less-transforms');
 
 // jscodeshift codemod scripts dir
@@ -153,7 +151,7 @@ async function transform(transformer, parser, filePath, options) {
   }
 }
 
-async function upgradeDetect(targetDir, needIcon, needCompatible) {
+async function upgradeDetect(targetDir, needProLayout, needCompatible) {
   const result = [];
   const cwd = path.join(process.cwd(), targetDir);
   const closetPkgJson = await readPkgUp({ cwd });
@@ -163,11 +161,11 @@ async function upgradeDetect(targetDir, needIcon, needCompatible) {
     pkgJsonPath = "we didn't find your package.json";
     // unknown dependency property
     result.push(['install', 'antd', pkgUpgradeList.antd]);
-    if (needIcon) {
+    if (needProLayout) {
       result.push([
         'install',
-        '@ant-design/icons',
-        pkgUpgradeList['@ant-design/icons'].version,
+        '@ant-design/pro-layout',
+        pkgUpgradeList['@ant-design/pro-layout'].version,
       ]);
     }
 
@@ -184,8 +182,8 @@ async function upgradeDetect(targetDir, needIcon, needCompatible) {
 
     // dependencies must be installed or upgraded with correct version
     const mustInstallOrUpgradeDeps = ['antd'];
-    if (needIcon) {
-      mustInstallOrUpgradeDeps.push('@ant-design/icons');
+    if (needProLayout) {
+      mustInstallOrUpgradeDeps.push('@ant-design/pro-layout');
     }
     if (needCompatible) {
       mustInstallOrUpgradeDeps.push('@ant-design/compatible');
@@ -247,7 +245,7 @@ async function upgradeDetect(targetDir, needIcon, needCompatible) {
     ([operateType, depName, expectVersion, dependencyProperty]) =>
       [
         _.capitalize(operateType),
-        `${depName}^${expectVersion}`,
+        `${depName}${expectVersion}`,
         dependencyProperty ? `in ${dependencyProperty}` : '',
       ].join(' '),
   );
@@ -295,30 +293,17 @@ async function bootstrap() {
     console.log(chalk.yellow('Invalid dir:', dir, ', please pass a valid dir'));
     process.exit(1);
   }
-  await summary.start();
-  await marker.start();
+
   await run(dir, args);
 
   try {
-    const output = await summary.output();
-    if (Array.isArray(output) && output.length) {
-      console.log('----------- antd5 codemod diagnosis -----------\n');
-      output
-        .filter(n => Array.isArray(n) && n.length >= 3)
-        .forEach(n => {
-          const [filename, source, message] = n;
-          console.log(`file: ${filename}`);
-          console.log('>>>', chalk.yellow(source));
-          console.log(message);
-          console.log('\n');
-        });
-    }
-
     console.log('----------- antd5 dependencies alert -----------\n');
-    const dependenciesMarkers = await marker.output();
-    const needIcon = dependenciesMarkers['@ant-design/icons'];
-    const needCompatible = dependenciesMarkers['@ant-design/compatible'];
-    await upgradeDetect(dir, needIcon, needCompatible);
+    const depsList = await getDependencies();
+    await upgradeDetect(
+      dir,
+      depsList.includes('@ant-design/pro-layout'),
+      depsList.includes('@ant-design/compatible'),
+    );
 
     console.log(
       `\n----------- Thanks for using @ant-design/codemod ${pkg.version} -----------`,
