@@ -1,9 +1,9 @@
-const { printOptions } = require('./utils/config');
 const {
   addSubmoduleImport,
   removeEmptyModuleImport,
   parseStrToArray,
 } = require('./utils');
+const { printOptions } = require('./utils/config');
 const { markDependency } = require('./utils/marker');
 
 const removedComponentConfig = {
@@ -91,8 +91,8 @@ module.exports = (file, api, options) => {
             localName: localComponentName,
             before: antdPkgName,
           });
+          markDependency(importConfig.importSource);
         }
-        markDependency(importConfig);
       });
 
     return hasChanged;
