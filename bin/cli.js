@@ -304,12 +304,12 @@ async function bootstrap() {
       depsList.includes('@ant-design/pro-layout'),
       depsList.includes('@ant-design/compatible'),
     );
-
+  } catch (err) {
+    console.log('skip summary due to', err);
+  } finally {
     console.log(
       `\n----------- Thanks for using @ant-design/codemod ${pkg.version} -----------`,
     );
-  } catch (err) {
-    console.log('skip summary due to', err);
   }
 }
 
