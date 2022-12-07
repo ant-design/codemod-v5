@@ -27,6 +27,7 @@ function markDependency(depName) {
 }
 
 async function getDependencies() {
+  ensureFile();
   const content = await fs.promises.readFile(markerPath, 'utf8');
   await cleanup();
   return _.uniq((content || '').split(newline));

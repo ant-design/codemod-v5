@@ -8,7 +8,6 @@ const _ = require('lodash');
 const chalk = require('chalk');
 const isGitClean = require('is-git-clean');
 const updateCheck = require('update-check');
-const readPkgUp = require('read-pkg-up');
 const findUp = require('find-up');
 const semver = require('semver');
 const { run: jscodeshift } = require('jscodeshift/src/Runner');
@@ -154,7 +153,8 @@ async function transform(transformer, parser, filePath, options) {
 async function upgradeDetect(targetDir, needProLayout, needCompatible) {
   const result = [];
   const cwd = path.join(process.cwd(), targetDir);
-  const closetPkgJson = await readPkgUp({ cwd });
+  const { readPackageUp } = await import('read-pkg-up');
+  const closetPkgJson = await readPackageUp({ cwd });
 
   let pkgJsonPath;
   if (!closetPkgJson) {
