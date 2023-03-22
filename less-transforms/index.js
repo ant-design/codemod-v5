@@ -1,6 +1,7 @@
 const path = require('path');
 const { promisify } = require('util');
 const glob = require('glob');
+const { performance } = require('perf_hooks');
 
 const globAsync = promisify(glob);
 
