@@ -151,6 +151,13 @@ body {
 }
 ```
 
+## Development
+
+```bash
+  npm run release
+  npm publish
+```
+
 ## License
 
 MIT
