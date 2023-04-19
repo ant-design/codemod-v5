@@ -1,7 +1,7 @@
 import { defineTest } from 'jscodeshift/src/testUtils';
 
 const tests = [
-  // 'basic',
+  'basic',
   'compound',
 ];
 
