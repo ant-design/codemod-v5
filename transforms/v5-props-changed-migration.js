@@ -143,6 +143,11 @@ module.exports = (file, api, options) => {
             name: propName,
           },
         })
+        .filter(nodePath => {
+          // 只找第一层的 JSXElement 的 Attributes
+          return j.JSXOpeningElement.check(nodePath.parent.node)
+            && collection.paths().includes(nodePath.parent.parent);
+        })
         .forEach(nodePath => {
           const { action, replacer } = componentConfig[propName];
           if (action === 'rename' && replacer) {
